@@ -117,8 +117,8 @@ footer{margin-top:36px;color:var(--faint);font-size:12px;display:flex;gap:12px;f
   <header class="top">
     <div>
       <div class="eyebrow"><span class="dot"></span>Built for Campfire's Business Operations role · by Jake Makking-Robinson</div>
-      <h1>Is this month's board pack ready, and does it <em>tie out</em>?</h1>
-      <p class="sub">Drop in your exports. See what won't tie out before the board does.</p>
+      <h1>Do this month's numbers <em>tie out</em>?</h1>
+      <p class="sub">Drop in your exports. See what doesn't reconcile, and why.</p>
     </div>
     <span id="srcBadge" class="badge demo">Demo data · fictional company</span>
   </header>
@@ -129,7 +129,7 @@ footer{margin-top:36px;color:var(--faint);font-size:12px;display:flex;gap:12px;f
     <span class="sep"></span>
     <button class="btn" data-tab="data">Load your CSVs</button>
     <button class="btn" id="resetDemo">Reset to demo</button>
-    <button class="cta" id="copyPack">Copy board summary <span class="arw">→</span></button>
+    <button class="cta" id="copyPack">Copy summary <span class="arw">→</span></button>
   </div>
 </div></div>
 
@@ -151,8 +151,8 @@ footer{margin-top:36px;color:var(--faint);font-size:12px;display:flex;gap:12px;f
     <div class="grid kpis" id="kpis"></div>
     <div class="grid two" style="margin-top:12px">
       <div class="card">
-        <h3>Board summary, written from the numbers</h3>
-        <p class="hint">Regenerates when the close month or data changes. "Copy board summary" puts it on your clipboard as text.</p>
+        <h3>Month-end summary, written from the numbers</h3>
+        <p class="hint">Regenerates when the close month or data changes.</p>
         <div class="narr" id="narr"></div>
       </div>
       <div class="card">
@@ -428,7 +428,7 @@ function compute(){
     const k=d.customer_id+'|'+m;(grp[k]??={id:d.customer_id,name:d.customer_name,m,amt:0,deals:[]});grp[k].amt+=d.amount_arr;grp[k].deals.push(d.deal_id)});
   Object.values(grp).forEach(g=>{const led=posDelta(g.id,g.m,g.amt);
     if(led===0)checks.push({sev:'neg',kind:'Booked in CRM, not in ARR schedule',rec:`${g.deals.join(', ')} · ${g.name}`,detail:`${moneyFull(g.amt)} closed-won ${mLabel(g.m)}; no ARR increase for ${g.id} in ${addM(g.m,1)>lastM?mLabel(g.m):mLabel(g.m)+'–'+mLabel(addM(g.m,1))}`,why:'Bookings and ARR will not tie. Either the contract is not live in billing yet, or the deal is mis-staged.'});
-    else if(Math.abs(g.amt-led)/led>0.05)checks.push({sev:'neg',kind:'Amount mismatch',rec:`${g.deals.join(', ')} · ${g.name}`,detail:`CRM ${moneyFull(g.amt)} vs schedule ${moneyFull(led)} (${g.amt>led?'+':'−'}${pct(Math.abs(g.amt-led)/led,0)})`,why:'Commission is paid on the CRM figure. The board sees the schedule figure.'})});
+    else if(Math.abs(g.amt-led)/led>0.05)checks.push({sev:'neg',kind:'Amount mismatch',rec:`${g.deals.join(', ')} · ${g.name}`,detail:`CRM ${moneyFull(g.amt)} vs schedule ${moneyFull(led)} (${g.amt>led?'+':'−'}${pct(Math.abs(g.amt-led)/led,0)})`,why:'Commission is paid on the CRM figure; reported ARR uses the schedule figure.'})});
   M.events.filter(e=>inWin(e.month)&&e.delta>0&&e.type!=='contr').forEach(e=>{
     const has=won.some(d=>d.customer_id===e.customer_id&&[addM(e.month,-1),e.month].includes(d.close_date.slice(0,7)));
     if(!has)checks.push({sev:'warn',kind:'ARR increase with no closed-won deal',rec:`${e.customer_id} · ${e.customer_name}`,detail:`${{new:'New',exp:'Expansion',react:'Reactivation'}[e.type]} ${moneyFull(e.delta)} in ${mLabel(e.month)}`,why:'Likely a deal never moved to closed-won, so nobody is credited and bookings are understated.'})});
@@ -484,7 +484,7 @@ function render(){
   // checks / status
   const nNeg=S.checks.filter(c=>c.sev==='neg').length,nAll=S.checks.length;$('#chkCnt').textContent=nAll;$('#chkCnt').style.display=nAll?'':'none';
   const st=$('#status');st.className='status '+(nAll?'bad':'ok');
-  st.innerHTML=nAll?`<span><b>Not ready for the board yet.</b> ${nAll} exception${nAll>1?'s':''} between the CRM and the ARR schedule (${nNeg} break the bookings-to-ARR tie-out).</span><button class="btn go" data-tab="checks">Review exceptions</button>`:`<span><b>Ties out.</b> Every closed-won deal in the last six months matches an ARR change, and every ARR increase has a deal behind it.</span>`;
+  st.innerHTML=nAll?`<span><b>Doesn't tie out yet.</b> ${nAll} exception${nAll>1?'s':''} between the CRM and the ARR schedule (${nNeg} break the bookings-to-ARR tie-out).</span><button class="btn go" data-tab="checks">Review exceptions</button>`:`<span><b>Ties out.</b> Every closed-won deal in the last six months matches an ARR change, and every ARR increase has a deal behind it.</span>`;
   // KPIs
   const net=b.close-b.open;const qMonths=mRange(q.start,asof);const qtdBk=qMonths.reduce((a,m)=>a+(S.bk[m]?.new||0)+(S.bk[m]?.exp||0),0);
   const nq=qOf(addM(q.end,1));const open=S.deals.filter(d=>!isWon(d.stage)&&!isLost(d.stage)&&d.close_date);
@@ -564,7 +564,7 @@ $('#nqTarget').addEventListener('change',e=>{S.nqTarget=num(e.target.value);S.nq
 ['rate','accel','rampM','rampP'].forEach(id=>$('#'+id).addEventListener('input',()=>renderComp(S.compQ,S.asof)));
 document.addEventListener('change',e=>{if(e.target.dataset.quota){S.quota[e.target.dataset.quota]=num(e.target.value);renderComp(S.compQ,S.asof)}if(e.target.dataset.prob){S.probs[e.target.dataset.prob]=num(e.target.value)/100;render()}});
 $('#dlComp').addEventListener('click',()=>download(`commissions_${qOf(S.asof).label.replace(' ','_')}.csv`,toCSV(S.compRows.map(r=>({rep:r.o,quota:Math.round(r.quota),credited_arr:Math.round(r.cr),attainment:(r.att*100).toFixed(1)+'%',base:r.base.toFixed(2),accelerator:r.ac.toFixed(2),payout:r.tot.toFixed(2)})),['rep','quota','credited_arr','attainment','base','accelerator','payout'])));
-$('#copyPack').addEventListener('click',async()=>{const t=`Month-end summary · ${mLabel(S.asof)}\n\n`+S.narrText;try{await navigator.clipboard.writeText(t);toast('Board summary copied')}catch{const a=document.createElement('textarea');a.value=t;document.body.appendChild(a);a.select();document.execCommand('copy');a.remove();toast('Board summary copied')}});
+$('#copyPack').addEventListener('click',async()=>{const t=`Month-end summary · ${mLabel(S.asof)}\n\n`+S.narrText;try{await navigator.clipboard.writeText(t);toast('Summary copied')}catch{const a=document.createElement('textarea');a.value=t;document.body.appendChild(a);a.select();document.execCommand('copy');a.remove();toast('Summary copied')}});
 $('#resetDemo').addEventListener('click',()=>{S.sched=S.demo.sched;S.deals=S.demo.deals;S.vendors=S.demo.vendors;S.repSheet=S.demo.repSheet;S.src={arr:'demo',deals:'demo',vendors:'demo'};S.asof=null;S.nqTargetSet=false;S.quota={};$$('.loaded').forEach(e=>e.textContent='');$$('input[type=file]').forEach(e=>e.value='');render();toast('Back on demo data')});
 $$('input[type=file]').forEach(inp=>inp.addEventListener('change',async()=>{const f=inp.files[0];if(!f)return;const k=inp.dataset.kind;try{const rows=parseCSV(await f.text());let n=0;
   if(k==='arr'){S.sched=rows.map(r=>({month:normMonth(r.month),customer_id:r.customer_id,customer_name:r.customer_name,arr:num(r.arr)})).filter(r=>r.month&&r.customer_id);n=S.sched.length;S.asof=null}
