@@ -1,0 +1,577 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Month-end metrics pack · built for Campfire</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#FFFFFF; --panel:#FFFFFF; --well:#F0F0EF; --line:#E6E6E3; --line2:#F3F3F1;
+  --ink:#1F2D27; --forest:#1E2B26; --muted:#62695F; --faint:#9AA096;
+  --lime:#BDEB9C; --lime-ink:#B5E58C; --orange:#F28A3E;
+  --accent:#7CC653; --accent-soft:#F1FAEA;
+  --pos:#2F7D32; --pos-soft:#EEF8E7; --neg:#C2410C; --neg-soft:#FDEFE6; --warn:#A16207; --warn-soft:#FDF6E3;
+  --r:16px;
+}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--ink);font-family:'Inter Tight',Inter,system-ui,-apple-system,Segoe UI,sans-serif;font-size:14px;line-height:1.45;-webkit-font-smoothing:antialiased}
+.hero{background:var(--forest);color:#F6F7F2}
+.hero .wrap{padding-bottom:34px}
+.hero .eyebrow{color:#A9B5AC}
+.hero h1{color:#F6F7F2}
+.hero h1 em{font-style:normal;color:var(--lime-ink)}
+.hero .sub{color:#C9D2CB}
+.logo{display:inline-flex;align-items:center;gap:8px}
+.cta{display:inline-flex;align-items:center;gap:12px;background:var(--lime);color:var(--forest);border:0;border-radius:999px;padding:6px 6px 6px 18px;font:inherit;font-weight:600;font-size:14px;cursor:pointer}
+.cta .arw{width:30px;height:30px;border-radius:50%;background:var(--orange);display:grid;place-items:center;color:#fff;font-size:16px}
+.cta:hover{filter:brightness(.97)}
+.well{background:var(--well);border-radius:28px;padding:14px}
+.main{padding-top:22px}
+.num,td.n,th.n{font-variant-numeric:tabular-nums}
+a{color:inherit}
+.wrap{max-width:1180px;margin:0 auto;padding:28px 24px 64px}
+header.top{display:flex;justify-content:space-between;align-items:flex-start;gap:16px;flex-wrap:wrap}
+.eyebrow{display:inline-flex;align-items:center;gap:8px;font-size:12px;font-weight:500;color:var(--muted)}
+.dot{width:8px;height:8px;border-radius:2px;background:var(--accent)}
+h1{font-size:30px;line-height:1.15;letter-spacing:-.02em;font-weight:600;margin:10px 0 6px}
+.sub{color:var(--muted);max-width:720px;margin:0}
+.badge{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:500;padding:4px 10px;border-radius:999px;border:1px solid var(--line);background:var(--panel);color:var(--muted);white-space:nowrap}
+.badge.demo{background:var(--warn-soft);border-color:#F5DDB3;color:var(--warn)}
+.badge.live{background:var(--pos-soft);border-color:#BFE3CA;color:var(--pos)}
+.controls{margin-top:24px;display:flex;gap:10px;align-items:center;flex-wrap:wrap;padding:10px 10px 10px 16px;border:1px solid rgba(255,255,255,.12);border-radius:999px;background:rgba(255,255,255,.05)}
+.controls label{font-size:12px;color:#C9D2CB;font-weight:500}
+.controls .btn{background:transparent;border-color:rgba(255,255,255,.18);color:#F6F7F2;border-radius:999px}
+.controls .btn:hover{background:rgba(255,255,255,.08)}
+.controls select{border-radius:999px;padding:6px 12px}
+section[id^="t-"]{background:var(--well);border-radius:28px;padding:14px}
+section[id^="t-"] .card{border:0;border-radius:18px}
+.dot{background:var(--orange)!important}
+select,input[type=number],input[type=text]{font:inherit;font-size:13px;border:1px solid var(--line);border-radius:7px;padding:6px 8px;background:#fff;color:var(--ink)}
+input[type=number]{width:96px}
+.btn{font:inherit;font-size:13px;font-weight:500;border:1px solid var(--line);background:#fff;color:var(--ink);border-radius:7px;padding:6px 11px;cursor:pointer;white-space:nowrap}
+.btn:hover{background:var(--line2)}
+.btn.primary{background:var(--ink);border-color:var(--ink);color:#fff}
+.btn.primary:hover{background:#2b2b30}
+.sep{flex:1}
+.status{margin-top:14px;display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:var(--r);border:1px solid var(--line);background:var(--panel)}
+.status.ok{border-color:#BFE3CA;background:var(--pos-soft)}
+.status.bad{border-color:#F3C9C3;background:var(--neg-soft)}
+.status b{font-weight:600}
+.status .go{margin-left:auto}
+nav.tabs{display:flex;gap:2px;margin:22px 0 14px;border-bottom:1px solid var(--line);overflow-x:auto}
+nav.tabs button{font:inherit;font-size:13px;font-weight:500;color:var(--muted);background:none;border:0;border-bottom:2px solid transparent;padding:9px 12px;cursor:pointer;white-space:nowrap}
+nav.tabs button.on{color:var(--ink);border-bottom-color:var(--accent)}
+nav.tabs .cnt{display:inline-block;min-width:18px;padding:0 5px;margin-left:5px;border-radius:999px;background:var(--neg-soft);color:var(--neg);font-size:11px;font-weight:600;text-align:center}
+.grid{display:grid;gap:12px}
+.kpis{grid-template-columns:repeat(6,1fr)}
+.two{grid-template-columns:1.35fr 1fr}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);padding:16px}
+.card h3{margin:0 0 2px;font-size:13px;font-weight:600}
+.card .hint{color:var(--muted);font-size:12px;margin:0 0 12px}
+.kpi .l{font-size:12px;color:var(--muted);font-weight:500}
+.kpi .v{font-size:22px;font-weight:600;letter-spacing:-.01em;margin-top:4px}
+.kpi .d{font-size:12px;margin-top:2px;color:var(--muted)}
+.up{color:var(--pos)} .down{color:var(--neg)}
+.narr{font-size:15px;line-height:1.6;margin:0}
+.narr p{margin:0 0 10px}
+.row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th{font-weight:500;color:var(--muted);font-size:12px;text-align:left;padding:7px 8px;border-bottom:1px solid var(--line);white-space:nowrap}
+td{padding:7px 8px;border-bottom:1px solid var(--line2);white-space:nowrap}
+td.n,th.n{text-align:right}
+tr.tot td{font-weight:600;border-top:1px solid var(--line);border-bottom:0}
+.scroll{overflow-x:auto}
+.pill{display:inline-block;font-size:11px;font-weight:600;padding:2px 8px;border-radius:999px}
+.pill.neg{background:var(--neg-soft);color:var(--neg)}
+.pill.warn{background:var(--warn-soft);color:var(--warn)}
+.pill.pos{background:var(--pos-soft);color:var(--pos)}
+.pill.mute{background:var(--line2);color:var(--muted)}
+.bar{height:8px;border-radius:4px;background:var(--line2);overflow:hidden;min-width:80px}
+.bar i{display:block;height:100%;background:var(--accent)}
+.bar i.over{background:var(--pos)}
+.settings{display:flex;gap:16px;flex-wrap:wrap;align-items:flex-end;margin-bottom:12px;padding:10px 12px;border-radius:8px;background:var(--line2)}
+.settings div{display:flex;flex-direction:column;gap:4px}
+.settings label{font-size:11px;color:var(--muted);font-weight:500}
+.note{font-size:12px;color:var(--muted);margin-top:10px}
+.drop{border:1.5px dashed var(--line);border-radius:var(--r);padding:14px;background:#fff}
+.drop h4{margin:0 0 4px;font-size:13px}
+.drop p{margin:0 0 8px;font-size:12px;color:var(--muted)}
+.drop code{font-size:11px;background:var(--line2);padding:1px 5px;border-radius:4px}
+.loaded{font-size:12px;color:var(--pos);font-weight:500}
+svg text{font-family:Inter,system-ui,sans-serif}
+.hide{display:none}
+#chkTbl td{white-space:normal;vertical-align:top}
+#chkTbl td:first-child{white-space:nowrap}
+footer{margin-top:36px;color:var(--faint);font-size:12px;display:flex;gap:12px;flex-wrap:wrap;justify-content:space-between}
+.toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:var(--ink);color:#fff;padding:8px 14px;border-radius:8px;font-size:13px;opacity:0;transition:opacity .2s;pointer-events:none}
+.toast.on{opacity:1}
+@media (max-width:980px){.kpis{grid-template-columns:repeat(3,1fr)}.two{grid-template-columns:1fr}}
+@media (max-width:560px){.controls{border-radius:20px;padding:12px}.controls .cta{width:100%;justify-content:space-between}.wrap{padding:18px 14px 48px}h1{font-size:24px}.kpis{grid-template-columns:repeat(2,1fr)}.kpi .v{font-size:19px}.sep{display:none}}
+</style>
+</head>
+<body>
+<div class="hero"><div class="wrap">
+  <header class="top">
+    <div>
+      <div class="eyebrow"><span class="dot"></span>Built for Campfire's Business Operations role · by Jake Makking-Robinson</div>
+      <h1>Is this month's board pack ready, and does it <em>tie out</em>?</h1>
+      <p class="sub">Drop in three exports (ARR by customer by month, CRM deals, vendor list). It builds the ARR bridge, retention, bookings and pipeline, runs the commission calc, lists vendor renewals, and flags every place the CRM and the revenue schedule disagree before any of it reaches the board. Everything runs in your browser. Nothing is uploaded.</p>
+    </div>
+    <span id="srcBadge" class="badge demo">Demo data · fictional company</span>
+  </header>
+
+  <div class="controls">
+    <label for="asof">Close month</label>
+    <select id="asof"></select>
+    <span class="sep"></span>
+    <button class="btn" data-tab="data">Load your CSVs</button>
+    <button class="btn" id="resetDemo">Reset to demo</button>
+    <button class="cta" id="copyPack">Copy board summary <span class="arw">→</span></button>
+  </div>
+</div></div>
+
+<div class="wrap main">
+  <div id="status" class="status"></div>
+
+  <nav class="tabs" id="tabs">
+    <button data-tab="summary" class="on">Summary</button>
+    <button data-tab="arr">ARR &amp; retention</button>
+    <button data-tab="pipe">Bookings &amp; pipeline</button>
+    <button data-tab="comp">Commissions</button>
+    <button data-tab="spend">Spend &amp; renewals</button>
+    <button data-tab="checks">Data checks<span class="cnt" id="chkCnt">0</span></button>
+    <button data-tab="data">Your data</button>
+  </nav>
+
+  <!-- SUMMARY -->
+  <section id="t-summary">
+    <div class="grid kpis" id="kpis"></div>
+    <div class="grid two" style="margin-top:12px">
+      <div class="card">
+        <h3>Board summary, written from the numbers</h3>
+        <p class="hint">Regenerates when the close month or data changes. "Copy board summary" puts it on your clipboard as text.</p>
+        <div class="narr" id="narr"></div>
+      </div>
+      <div class="card">
+        <h3 id="wfTitle">ARR bridge</h3>
+        <p class="hint">Opening ARR to closing ARR for the close month</p>
+        <div id="waterfall"></div>
+      </div>
+    </div>
+    <div class="card" style="margin-top:12px">
+      <h3>Ending ARR, trailing 12 months</h3>
+      <p class="hint">Bars split by what moved it each month</p>
+      <div id="arrChart"></div>
+    </div>
+  </section>
+
+  <!-- ARR -->
+  <section id="t-arr" class="hide">
+    <div class="card">
+      <h3>Monthly ARR bridge</h3>
+      <p class="hint">Customer-level month-over-month movement. New = first month with ARR. Reactivation = ARR returns after a month at zero.</p>
+      <div class="scroll"><table id="bridgeTbl"></table></div>
+    </div>
+    <div class="grid two" style="margin-top:12px">
+      <div class="card">
+        <h3>Net and gross revenue retention (trailing 12 months)</h3>
+        <p class="hint">Cohort = customers with ARR twelve months before each month. NRR counts expansion; GRR caps each customer at their starting ARR.</p>
+        <div class="scroll"><table id="retTbl"></table></div>
+      </div>
+      <div class="card">
+        <h3>Biggest movers in the close month</h3>
+        <p class="hint">Largest absolute ARR changes by customer</p>
+        <div class="scroll"><table id="moversTbl"></table></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PIPE -->
+  <section id="t-pipe" class="hide">
+    <div class="grid two">
+      <div class="card">
+        <h3>Bookings by close month</h3>
+        <p class="hint">Closed-won ARR from the CRM, new vs expansion</p>
+        <div id="bookChart"></div>
+        <div class="scroll"><table id="bookTbl"></table></div>
+      </div>
+      <div class="card">
+        <h3>Next-quarter coverage</h3>
+        <p class="hint" id="covHint"></p>
+        <div class="settings">
+          <div><label for="nqTarget">Next-quarter new ARR target ($)</label><input type="number" id="nqTarget" step="10000"></div>
+        </div>
+        <div id="coverage"></div>
+        <h3 style="margin-top:16px">Open pipeline by stage</h3>
+        <p class="hint">Stage probabilities are placeholders. Set them to your own historical win rates.</p>
+        <div class="scroll"><table id="stageTbl"></table></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- COMP -->
+  <section id="t-comp" class="hide">
+    <div class="card">
+      <h3 id="compTitle">Commission run</h3>
+      <p class="hint">Credited ARR = closed-won new and expansion ARR by deal owner, by close date. Plan settings below are placeholders. Set them to your actual plan.</p>
+      <div class="settings">
+        <div><label for="rate">Base rate (% of credited ARR)</label><input type="number" id="rate" step="0.5" value="10"></div>
+        <div><label for="accel">Accelerator above quota (×)</label><input type="number" id="accel" step="0.1" value="1.5"></div>
+        <div><label for="rampM">Ramp period (months)</label><input type="number" id="rampM" step="1" value="3"></div>
+        <div><label for="rampP">Ramp quota (% of full)</label><input type="number" id="rampP" step="5" value="50"></div>
+        <div><button class="btn" id="dlComp">Download payroll CSV</button></div>
+      </div>
+      <div class="scroll"><table id="compTbl"></table></div>
+      <p class="note" id="compNote"></p>
+    </div>
+  </section>
+
+  <!-- SPEND -->
+  <section id="t-spend" class="hide">
+    <div class="grid two">
+      <div class="card">
+        <h3>Renewals in the next 90 days</h3>
+        <p class="hint">Sorted by notice deadline, the date you lose leverage, not the renewal date</p>
+        <div class="scroll"><table id="renewTbl"></table></div>
+      </div>
+      <div class="card">
+        <h3>Annual vendor spend by category</h3>
+        <p class="hint">From the vendor list, annualised contract value</p>
+        <div id="spendChart"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CHECKS -->
+  <section id="t-checks" class="hide">
+    <div class="card">
+      <h3>CRM vs revenue schedule: exceptions in the last 6 months</h3>
+      <p class="hint">Deals are matched to ARR changes for the same customer in the close month or the month after, at a 5% tolerance. Each row is something to fix or explain before the numbers go out.</p>
+      <div class="scroll"><table id="chkTbl"></table></div>
+    </div>
+  </section>
+
+  <!-- DATA -->
+  <section id="t-data" class="hide">
+    <div class="grid" style="grid-template-columns:repeat(auto-fit,minmax(280px,1fr))">
+      <div class="drop">
+        <h4>1 · ARR schedule</h4>
+        <p>One row per customer per month. Columns: <code>month</code> (YYYY-MM), <code>customer_id</code>, <code>customer_name</code>, <code>arr</code></p>
+        <div class="row"><input type="file" accept=".csv" data-kind="arr"><button class="btn" data-dl="arr">Download demo file</button></div>
+        <div class="loaded" id="ld-arr"></div>
+      </div>
+      <div class="drop">
+        <h4>2 · CRM deals</h4>
+        <p>Columns: <code>deal_id</code>, <code>customer_id</code>, <code>customer_name</code>, <code>owner</code>, <code>stage</code>, <code>type</code> (new / expansion), <code>close_date</code>, <code>amount_arr</code>. Optional rep sheet columns: <code>owner_start</code></p>
+        <div class="row"><input type="file" accept=".csv" data-kind="deals"><button class="btn" data-dl="deals">Download demo file</button></div>
+        <div class="loaded" id="ld-deals"></div>
+      </div>
+      <div class="drop">
+        <h4>3 · Vendors</h4>
+        <p>Columns: <code>vendor</code>, <code>category</code>, <code>annual_cost</code>, <code>renewal_date</code>, <code>notice_days</code>, <code>auto_renew</code> (yes / no), <code>owner</code></p>
+        <div class="row"><input type="file" accept=".csv" data-kind="vendors"><button class="btn" data-dl="vendors">Download demo file</button></div>
+        <div class="loaded" id="ld-vendors"></div>
+      </div>
+    </div>
+    <p class="note">Load any one file and the rest stay on demo data. Stage names containing "won" count as closed-won and "lost" as closed-lost; anything else is open pipeline. Files are parsed in this tab only.</p>
+  </section>
+
+  <footer>
+    <span>Demo company, customers, reps and vendors are fictional and generated from a fixed seed.</span>
+    <span>Jake Makking-Robinson · j.makkingrobinson@gmail.com</span>
+  </footer>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+/* ---------- utilities ---------- */
+const $ = s => document.querySelector(s);
+const $$ = s => [...document.querySelectorAll(s)];
+function mulberry32(a){return function(){a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
+const ym = (y,m)=> `${y}-${String(m).padStart(2,'0')}`;
+function addM(s,n){let [y,m]=s.split('-').map(Number);let t=y*12+(m-1)+n;return ym(Math.floor(t/12),t%12+1)}
+function mDiff(a,b){const [ya,ma]=a.split('-').map(Number),[yb,mb]=b.split('-').map(Number);return (yb*12+mb)-(ya*12+ma)}
+function mRange(a,b){const o=[];for(let s=a;s<=b;s=addM(s,1))o.push(s);return o}
+const MN=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+const mLabel = s=>{const [y,m]=s.split('-');return `${MN[+m-1]} ${y}`};
+const mShort = s=>{const [y,m]=s.split('-');return `${MN[+m-1]} ${y.slice(2)}`};
+const qOf = s=>{const [y,m]=s.split('-').map(Number);const q=Math.floor((m-1)/3);return {y,q:q+1,start:ym(y,q*3+1),end:ym(y,q*3+3),label:`Q${q+1} ${y}`}};
+function money(v,dp){if(v==null||isNaN(v))return '–';const a=Math.abs(v),s=v<0?'−':'';if(a>=1e6)return s+'$'+(a/1e6).toFixed(dp??2)+'M';if(a>=1e3)return s+'$'+(a/1e3).toFixed(dp??0)+'k';return s+'$'+Math.round(a)}
+function moneyFull(v){return (v<0?'−':'')+'$'+Math.round(Math.abs(v)).toLocaleString('en-US')}
+const pct=(v,dp=1)=> v==null||!isFinite(v)?'–':(v*100).toFixed(dp)+'%';
+const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+function toast(t){const e=$('#toast');e.textContent=t;e.classList.add('on');setTimeout(()=>e.classList.remove('on'),1800)}
+
+/* ---------- CSV ---------- */
+function parseCSV(text){
+  const rows=[];let row=[],f='',q=false;
+  for(let i=0;i<text.length;i++){const c=text[i];
+    if(q){if(c=='"'){if(text[i+1]=='"'){f+='"';i++}else q=false}else f+=c}
+    else if(c=='"')q=true;else if(c==','){row.push(f);f=''}
+    else if(c=='\n'||c=='\r'){if(c=='\r'&&text[i+1]=='\n')i++;row.push(f);f='';if(row.some(x=>x!==''))rows.push(row);row=[]}
+    else f+=c}
+  row.push(f);if(row.some(x=>x!==''))rows.push(row);
+  const h=rows.shift().map(x=>x.trim().toLowerCase());
+  return rows.map(r=>Object.fromEntries(h.map((k,i)=>[k,(r[i]??'').trim()])));
+}
+function toCSV(rows,cols){const e=v=>{v=String(v??'');return /[",\n]/.test(v)?'"'+v.replace(/"/g,'""')+'"':v};return [cols.join(','),...rows.map(r=>cols.map(c=>e(r[c])).join(','))].join('\n')}
+function download(name,text){const b=new Blob([text],{type:'text/csv'});const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),500)}
+const num=v=>{const n=parseFloat(String(v).replace(/[$,\s]/g,''));return isNaN(n)?0:n};
+function normMonth(v){v=String(v).trim();let m=v.match(/^(\d{4})-(\d{1,2})/);if(m)return ym(+m[1],+m[2]);m=v.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})/);if(m)return ym(+m[3],+m[1]);const d=new Date(v);return isNaN(d)?null:ym(d.getFullYear(),d.getMonth()+1)}
+function normDate(v){v=String(v).trim();let m=v.match(/^(\d{4})-(\d{1,2})-(\d{1,2})/);if(m)return `${m[1]}-${m[2].padStart(2,'0')}-${m[3].padStart(2,'0')}`;m=v.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})/);if(m)return `${m[3]}-${m[1].padStart(2,'0')}-${m[2].padStart(2,'0')}`;const d=new Date(v);return isNaN(d)?null:d.toISOString().slice(0,10)}
+
+/* ---------- demo data (fixed seed) ---------- */
+function genDemo(){
+  const r=mulberry32(20261102);
+  const gauss=()=>{let u=0,v=0;while(!u)u=r();while(!v)v=r();return Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*v)};
+  const pick=a=>a[Math.floor(r()*a.length)];
+  const A=['Acme','Brightline','Cobalt','Driftwood','Ember','Foxglove','Granite','Harbor','Ironleaf','Juniper','Kestrel','Lumen','Meridian','Northstar','Oakline','Pinecrest','Quarry','Redwood','Saltwater','Tidewater','Umbra','Vantage','Willow','Yarrow','Zephyr','Alder','Basalt','Cinder','Delta','Evergreen','Fathom','Glacier','Halcyon','Indigo','Jetstream','Keystone','Larkspur','Monarch','Nimbus','Orchard','Parallel','Quill','Ridgeway','Sequoia','Tamarack','Upland','Verdant','Waypoint'];
+  const B=['Labs','AI','Health','Systems','Robotics','Cloud','Data','Pay','Logistics','Security','Bio','Software','Analytics','Networks','Energy','Learning'];
+  const used=new Set();const name=()=>{let n;do{n=pick(A)+' '+pick(B)}while(used.has(n));used.add(n);return n};
+  const reps=[{rep:'Avery Chen',start:'2024-03'},{rep:'Jordan Patel',start:'2024-06'},{rep:'Sam Okafor',start:'2025-02'},{rep:'Riley Moreno',start:'2025-05'},{rep:'Taylor Brooks',start:'2025-11'},{rep:'Casey Lindqvist',start:'2026-08'}];
+  const first='2025-01',last='2026-10',months=mRange(first,last);
+  const size=()=>Math.max(6000,Math.min(240000,Math.round(26000*Math.exp(gauss()*0.65)/500)*500));
+  let cid=1000;const cust=[];
+  const mk=(startM)=>{const c={id:'C'+(cid++),name:name(),arr:size(),anniv:+startM.split('-')[1],owner:pick(reps.slice(0,4)).rep,on:true,churned:null};cust.push(c);return c};
+  for(let i=0;i<58;i++)mk(ym(2024,1+Math.floor(r()*12)));
+  const sched=[],deals=[];let did=5000;
+  const day=m=>`${m}-${String(1+Math.floor(r()*27)).padStart(2,'0')}`;
+  const activeReps=m=>reps.filter(x=>x.start<=m);
+  months.forEach((m,i)=>{
+    const mo=+m.split('-')[1];
+    if(i>0){
+      cust.forEach(c=>{
+        if(!c.on){ if(c.churned && mDiff(c.churned,m)==7 && c.name.startsWith('C') ){c.on=true;c.arr=Math.round(c.arr*0.8/500)*500;deals.push({deal_id:'D'+(did++),customer_id:c.id,customer_name:c.name,owner:c.owner,stage:'Closed Won',type:'new',close_date:day(m),amount_arr:c.arr})} return }
+        if(mo===c.anniv && r()<0.085){c.on=false;c.churned=m;return}
+        if(r()<0.036){const d=Math.round(c.arr*(0.15+r()*0.5)/500)*500;c.arr+=d;deals.push({deal_id:'D'+(did++),customer_id:c.id,customer_name:c.name,owner:c.owner,stage:'Closed Won',type:'expansion',close_date:day(m),amount_arr:d});return}
+        if(mo===c.anniv && r()<0.07){c.arr=Math.round(c.arr*(0.7+r()*0.2)/500)*500}
+      });
+      const nNew=3+Math.floor(r()*3)+(i>12?1:0);
+      for(let k=0;k<nNew;k++){const c=mk(m);c.owner=pick(activeReps(m)).rep;deals.push({deal_id:'D'+(did++),customer_id:c.id,customer_name:c.name,owner:c.owner,stage:'Closed Won',type:'new',close_date:day(m),amount_arr:c.arr})}
+      for(let k=0;k<2;k++)deals.push({deal_id:'D'+(did++),customer_id:'',customer_name:name(),owner:pick(activeReps(m)).rep,stage:'Closed Lost',type:'new',close_date:day(m),amount_arr:size()});
+    }
+    cust.forEach(c=>{if(c.on)sched.push({month:m,customer_id:c.id,customer_name:c.name,arr:c.arr})});
+  });
+  // open pipeline
+  const stages=['Discovery','Evaluation','Proposal','Negotiation'];
+  for(let k=0;k<78;k++){const m=addM(last,1+Math.floor(r()*5));deals.push({deal_id:'D'+(did++),customer_id:'',customer_name:name(),owner:pick(reps).rep,stage:pick(stages),type:'new',close_date:day(m),amount_arr:size()})}
+  // --- deliberate exceptions, so the checks have something to find ---
+  deals.push({deal_id:'D'+(did++),customer_id:'C9001',customer_name:name(),owner:'Jordan Patel',stage:'Closed Won',type:'new',close_date:'2026-09-24',amount_arr:48000});
+  deals.push({deal_id:'D'+(did++),customer_id:'C9002',customer_name:name(),owner:'Riley Moreno',stage:'Closed Won',type:'new',close_date:'2026-10-29',amount_arr:31500});
+  const octExp=deals.filter(d=>d.type==='expansion'&&d.close_date.startsWith('2026-10')&&d.stage==='Closed Won');
+  if(octExp[0])octExp[0].amount_arr=Math.round(octExp[0].amount_arr*1.4/500)*500;
+  const octNew=deals.filter(d=>d.type==='new'&&d.close_date.startsWith('2026-10')&&d.stage==='Closed Won'&&d.customer_id<'C9000');
+  if(octNew[0])deals.splice(deals.indexOf(octNew[0]),1);
+  if(octNew[1])octNew[1].owner='';
+  const vend=[
+    ['Salesforce','Sales & GTM',96000,'2027-01-31',60,'yes','RevOps'],['Gong','Sales & GTM',54000,'2027-01-10',30,'yes','Sales'],['Outreach','Sales & GTM',38000,'2027-04-01',30,'yes','Sales'],['ZoomInfo','Sales & GTM',42000,'2026-12-01',60,'yes','Marketing'],
+    ['AWS','Infrastructure',410000,'2027-06-30',90,'no','Engineering'],['Datadog','Infrastructure',88000,'2027-01-20',30,'yes','Engineering'],['Snowflake','Infrastructure',72000,'2027-03-01',60,'no','Data'],['Vercel','Infrastructure',18000,'2026-11-20',14,'yes','Engineering'],
+    ['Anthropic API','AI & models',165000,'2027-02-01',30,'no','Engineering'],['OpenAI API','AI & models',58000,'2026-12-31',30,'no','Engineering'],
+    ['Rippling','People & finance',36000,'2027-01-20',60,'yes','People'],['Carta','People & finance',14000,'2027-01-05',60,'yes','Finance'],['Brex','People & finance',0,'2027-05-01',30,'yes','Finance'],
+    ['Notion','Productivity',16000,'2026-11-28',14,'yes','Ops'],['Slack','Productivity',22000,'2027-02-14',30,'yes','Ops'],['Google Workspace','Productivity',19000,'2027-03-10',30,'yes','IT'],['Figma','Productivity',9000,'2027-01-15',30,'yes','Design'],
+    ['Vanta','Security & compliance',28000,'2027-01-08',45,'yes','Security'],['Ironclad','Legal',24000,'2027-02-28',60,'yes','Legal'],['WeWork (SF office)','Facilities',312000,'2027-04-30',90,'no','Ops'],['Ashby','People & finance',21000,'2026-12-18',30,'yes','People'],['Linear','Productivity',8000,'2027-03-22',30,'yes','Engineering']];
+  const vendors=vend.map(v=>({vendor:v[0],category:v[1],annual_cost:v[2],renewal_date:v[3],notice_days:v[4],auto_renew:v[5],owner:v[6]}));
+  const repSheet={};reps.forEach(x=>repSheet[x.rep]=x.start);
+  return {sched,deals,vendors,repSheet};
+}
+
+/* ---------- model ---------- */
+const S={demo:genDemo(),src:{arr:'demo',deals:'demo',vendors:'demo'},quota:{},probs:{Discovery:.1,Evaluation:.25,Proposal:.5,Negotiation:.75}};
+S.sched=S.demo.sched;S.deals=S.demo.deals;S.vendors=S.demo.vendors;S.repSheet=S.demo.repSheet;
+
+function buildArr(sched){
+  const by={},names={};let mn=null,mx=null;
+  sched.forEach(r=>{if(!r.month||!r.customer_id)return;(by[r.customer_id]??={});by[r.customer_id][r.month]=(by[r.customer_id][r.month]||0)+r.arr;names[r.customer_id]=r.customer_name||r.customer_id;if(!mn||r.month<mn)mn=r.month;if(!mx||r.month>mx)mx=r.month});
+  const months=mn?mRange(mn,mx):[];const ids=Object.keys(by);
+  const A=(id,m)=>by[id]?.[m]||0;
+  const bridge={},events=[];
+  months.forEach((m,i)=>{
+    const b={month:m,open:0,new:0,exp:0,react:0,contr:0,churn:0,close:0,count:0};
+    ids.forEach(id=>{const c=A(id,m);b.close+=c;if(c>0)b.count++;if(i===0)return;const p=A(id,months[i-1]);b.open+=p;
+      if(p===c)return;
+      let type;
+      if(p===0){const had=months.slice(0,i-1).some(x=>A(id,x)>0);type=had?'react':'new';b[type]+=c}
+      else if(c===0){type='churn';b.churn-=p}
+      else if(c>p){type='exp';b.exp+=c-p}else{type='contr';b.contr+=c-p}
+      events.push({month:m,customer_id:id,customer_name:names[id],type,delta:c-p,from:p,to:c});
+    });
+    if(i===0)b.open=null;
+    bridge[m]=b;
+  });
+  const ret=m=>{const base=addM(m,-12);if(!bridge[base])return null;let s0=0,s1=0,g=0;ids.forEach(id=>{const a=A(id,base);if(a>0){const c=A(id,m);s0+=a;s1+=c;g+=Math.min(a,c)}});return s0?{nrr:s1/s0,grr:g/s0}:null};
+  return {months,bridge,events,ret,A,ids,names};
+}
+const isWon=s=>/won/i.test(s), isLost=s=>/lost/i.test(s);
+
+function compute(){
+  const M=buildArr(S.sched);S.M=M;
+  if(!M.months.length)return;
+  if(!S.asof||!M.bridge[S.asof])S.asof=M.months[M.months.length-1];
+  const asof=S.asof;
+  // bookings
+  const won=S.deals.filter(d=>isWon(d.stage)&&d.close_date);
+  const bk={};won.forEach(d=>{const m=d.close_date.slice(0,7);(bk[m]??={new:0,exp:0,n:0});if(/exp/i.test(d.type))bk[m].exp+=d.amount_arr;else bk[m].new+=d.amount_arr;bk[m].n++});
+  S.bk=bk;
+  // checks
+  const winStart=addM(asof,-5);const lastM=M.months[M.months.length-1];
+  const inWin=m=>m>=winStart&&m<=asof;
+  // ARR increase that best explains a booking: this month, next month, or both (closest wins)
+  const posDelta=(id,m,amt)=>{const d=x=>{if(x>lastM||x>addM(asof,1))return 0;const ev=M.events.find(e=>e.customer_id===id&&e.month===x&&e.delta>0);return ev?ev.delta:0};
+    const a=d(m),b=d(addM(m,1));const c=[a,b,a+b].filter(v=>v>0);if(!c.length)return 0;return c.sort((x,y)=>Math.abs(x-amt)-Math.abs(y-amt))[0]};
+  const checks=[];
+  const grp={};won.filter(d=>/new|exp/i.test(d.type)).forEach(d=>{const m=d.close_date.slice(0,7);if(!inWin(m))return;
+    if(!d.owner)checks.push({sev:'warn',kind:'Deal has no owner',rec:`${d.deal_id} · ${d.customer_name}`,detail:`${moneyFull(d.amount_arr)} closed ${d.close_date}`,why:'Not credited in the commission run until an owner is set.'});
+    if(!d.customer_id){checks.push({sev:'neg',kind:'Deal has no customer ID',rec:`${d.deal_id} · ${d.customer_name}`,detail:moneyFull(d.amount_arr),why:'Cannot be matched to the revenue schedule.'});return}
+    const k=d.customer_id+'|'+m;(grp[k]??={id:d.customer_id,name:d.customer_name,m,amt:0,deals:[]});grp[k].amt+=d.amount_arr;grp[k].deals.push(d.deal_id)});
+  Object.values(grp).forEach(g=>{const led=posDelta(g.id,g.m,g.amt);
+    if(led===0)checks.push({sev:'neg',kind:'Booked in CRM, not in ARR schedule',rec:`${g.deals.join(', ')} · ${g.name}`,detail:`${moneyFull(g.amt)} closed-won ${mLabel(g.m)}; no ARR increase for ${g.id} in ${addM(g.m,1)>lastM?mLabel(g.m):mLabel(g.m)+'–'+mLabel(addM(g.m,1))}`,why:'Bookings and ARR will not tie. Either the contract is not live in billing yet, or the deal is mis-staged.'});
+    else if(Math.abs(g.amt-led)/led>0.05)checks.push({sev:'neg',kind:'Amount mismatch',rec:`${g.deals.join(', ')} · ${g.name}`,detail:`CRM ${moneyFull(g.amt)} vs schedule ${moneyFull(led)} (${g.amt>led?'+':'−'}${pct(Math.abs(g.amt-led)/led,0)})`,why:'Commission is paid on the CRM figure. The board sees the schedule figure.'})});
+  M.events.filter(e=>inWin(e.month)&&e.delta>0&&e.type!=='contr').forEach(e=>{
+    const has=won.some(d=>d.customer_id===e.customer_id&&[addM(e.month,-1),e.month].includes(d.close_date.slice(0,7)));
+    if(!has)checks.push({sev:'warn',kind:'ARR increase with no closed-won deal',rec:`${e.customer_id} · ${e.customer_name}`,detail:`${{new:'New',exp:'Expansion',react:'Reactivation'}[e.type]} ${moneyFull(e.delta)} in ${mLabel(e.month)}`,why:'Likely a deal never moved to closed-won, so nobody is credited and bookings are understated.'})});
+  S.checks=checks;
+}
+
+/* ---------- charts (SVG) ---------- */
+const C={new:'#7CC653',exp:'#C4EBA6',react:'#F5B27C',contr:'#B5B8B0',churn:'#E2622C',ink:'#1F2D27',grid:'#EEEEEB',muted:'#8A9087'};
+function waterfall(b){
+  const W=460,H=280,pad={l:56,r:10,t:16,b:34};
+  const steps=[['Opening',b.open,'base'],['New',b.new,'new'],['Expansion',b.exp,'exp'],['Reactivated',b.react,'react'],['Contraction',b.contr,'contr'],['Churn',b.churn,'churn'],['Closing',b.close,'base']];
+  let run=0;const bars=steps.map(([l,v,k],i)=>{if(k==='base'){run=v;return {l,v,k,y0:0,y1:v}}const y0=run;run+=v;return {l,v,k,y0,y1:run}});
+  // truncated axis so monthly movements are readable; base bars run from the floor
+  const pts=bars.flatMap(x=>x.k==='base'?[x.y1]:[x.y0,x.y1]);const mn=Math.min(...pts),mxv=Math.max(...pts),span=Math.max(mxv-mn,mxv*0.01);
+  const lo=Math.max(0,mn-span*1.2), hi=mxv+span*0.25;
+  const y=v=>pad.t+(H-pad.t-pad.b)*(1-(v-lo)/(hi-lo));const bw=(W-pad.l-pad.r)/bars.length;
+  let s=`<svg viewBox="0 0 ${W} ${H}" width="100%" role="img" aria-label="ARR bridge">`;
+  for(let i=0;i<=3;i++){const v=lo+(hi-lo)*i/3;s+=`<line x1="${pad.l}" x2="${W-pad.r}" y1="${y(v)}" y2="${y(v)}" stroke="${C.grid}"/><text x="${pad.l-6}" y="${y(v)+4}" font-size="10" text-anchor="end" fill="${C.muted}">${money(v,1)}</text>`}
+  bars.forEach((x,i)=>{const X=pad.l+i*bw+bw*0.16,w=bw*0.68,t=Math.min(y(x.y0),y(x.y1)),h=Math.max(1.5,Math.abs(y(x.y0)-y(x.y1)));
+    const f=x.k==='base'?C.ink:C[x.k];s+=`<rect x="${X}" y="${x.k==='base'?y(x.y1):t}" width="${w}" height="${x.k==='base'?(H-pad.b-y(x.y1)):h}" rx="3" fill="${f}"/>`;
+    s+=`<text x="${X+w/2}" y="${(x.k==='base'?y(x.y1):t)-4}" font-size="10" text-anchor="middle" fill="${C.ink}" font-weight="500">${x.k==='base'?money(x.v,2):(x.v===0?'–':(x.v>0?'+':'')+money(x.v))}</text>`;
+    s+=`<text x="${X+w/2}" y="${H-pad.b+14}" font-size="10" text-anchor="middle" fill="${C.muted}">${x.l}</text>`});
+  s+=`<text x="${W-pad.r}" y="${H-2}" font-size="9" text-anchor="end" fill="${C.muted}">Axis starts at ${money(lo,2)}</text>`;
+  return s+'</svg>';
+}
+function arrChart(M,asof){
+  const ms=M.months.filter(m=>m<=asof).slice(-12);const W=1100,H=210,pad={l:56,r:10,t:14,b:26};
+  const mx=Math.max(...ms.map(m=>M.bridge[m].close))*1.08;const y=v=>pad.t+(H-pad.t-pad.b)*(1-v/mx);const bw=(W-pad.l-pad.r)/ms.length;
+  let s=`<svg viewBox="0 0 ${W} ${H}" width="100%" role="img" aria-label="Ending ARR">`;
+  for(let i=0;i<=4;i++){const v=mx*i/4;s+=`<line x1="${pad.l}" x2="${W-pad.r}" y1="${y(v)}" y2="${y(v)}" stroke="${C.grid}"/><text x="${pad.l-6}" y="${y(v)+4}" font-size="10" text-anchor="end" fill="${C.muted}">${money(v,1)}</text>`}
+  ms.forEach((m,i)=>{const b=M.bridge[m];const X=pad.l+i*bw+bw*0.2,w=bw*0.6;const gain=b.new+b.exp+b.react;const base=b.close-gain;
+    s+=`<rect x="${X}" y="${y(base)}" width="${w}" height="${H-pad.b-y(base)}" fill="${m===asof?C.ink:'#DCDDD8'}" rx="2"/>`;
+    let top=base;[['react',b.react],['exp',b.exp],['new',b.new]].forEach(([k,v])=>{if(v<=0)return;s+=`<rect x="${X}" y="${y(top+v)}" width="${w}" height="${y(top)-y(top+v)}" fill="${C[k]}"/>`;top+=v});
+    s+=`<text x="${X+w/2}" y="${H-8}" font-size="10" text-anchor="middle" fill="${m===asof?C.ink:C.muted}" font-weight="${m===asof?600:400}">${mShort(m)}</text>`});
+  s+=`<g font-size="10" fill="${C.muted}"><rect x="${pad.l}" y="2" width="8" height="8" fill="${C.new}"/><text x="${pad.l+12}" y="10">New</text><rect x="${pad.l+50}" y="2" width="8" height="8" fill="${C.exp}"/><text x="${pad.l+62}" y="10">Expansion</text><rect x="${pad.l+126}" y="2" width="8" height="8" fill="${C.react}"/><text x="${pad.l+138}" y="10">Reactivated</text><rect x="${pad.l+210}" y="2" width="8" height="8" fill="#DCDDD8"/><text x="${pad.l+222}" y="10">Retained base</text></g>`;
+  return s+'</svg>';
+}
+function bookChart(ms){
+  const W=520,H=180,pad={l:50,r:8,t:10,b:24};const mx=Math.max(1,...ms.map(m=>(S.bk[m]?.new||0)+(S.bk[m]?.exp||0)))*1.1;
+  const y=v=>pad.t+(H-pad.t-pad.b)*(1-v/mx);const bw=(W-pad.l-pad.r)/ms.length;let s=`<svg viewBox="0 0 ${W} ${H}" width="100%">`;
+  for(let i=0;i<=3;i++){const v=mx*i/3;s+=`<line x1="${pad.l}" x2="${W-pad.r}" y1="${y(v)}" y2="${y(v)}" stroke="${C.grid}"/><text x="${pad.l-6}" y="${y(v)+4}" font-size="10" text-anchor="end" fill="${C.muted}">${money(v)}</text>`}
+  ms.forEach((m,i)=>{const b=S.bk[m]||{new:0,exp:0};const X=pad.l+i*bw+bw*.2,w=bw*.6;s+=`<rect x="${X}" y="${y(b.new)}" width="${w}" height="${H-pad.b-y(b.new)}" fill="${C.new}"/><rect x="${X}" y="${y(b.new+b.exp)}" width="${w}" height="${y(b.new)-y(b.new+b.exp)}" fill="${C.exp}"/><text x="${X+w/2}" y="${H-8}" font-size="10" text-anchor="middle" fill="${C.muted}">${mShort(m)}</text>`});
+  return s+'</svg>';
+}
+function hbars(items){const mx=Math.max(...items.map(x=>x[1]));return '<table>'+items.map(([l,v])=>`<tr><td style="width:40%">${esc(l)}</td><td style="width:45%"><div class="bar"><i style="width:${(v/mx*100).toFixed(1)}%"></i></div></td><td class="n">${money(v)}</td></tr>`).join('')+`<tr class="tot"><td>Total</td><td></td><td class="n">${money(items.reduce((a,x)=>a+x[1],0))}</td></tr></table>`}
+
+/* ---------- render ---------- */
+function render(){
+  compute();const M=S.M;if(!M.months.length){$('#status').innerHTML='No ARR schedule rows found.';return}
+  const asof=S.asof,b=M.bridge[asof],prev=M.bridge[addM(asof,-1)],ret=M.ret(asof),q=qOf(asof);
+  $('#asof').innerHTML=M.months.slice(1).map(m=>`<option ${m===asof?'selected':''} value="${m}">${mLabel(m)}</option>`).join('');
+  const live=Object.values(S.src).some(v=>v!=='demo');const sb=$('#srcBadge');sb.className='badge '+(live?'live':'demo');sb.textContent=live?'Your data · '+Object.entries(S.src).filter(([k,v])=>v!=='demo').map(([k])=>({arr:'ARR',deals:'CRM',vendors:'vendors'}[k])).join(', ')+' loaded':'Demo data · fictional company';
+  // checks / status
+  const nNeg=S.checks.filter(c=>c.sev==='neg').length,nAll=S.checks.length;$('#chkCnt').textContent=nAll;$('#chkCnt').style.display=nAll?'':'none';
+  const st=$('#status');st.className='status '+(nAll?'bad':'ok');
+  st.innerHTML=nAll?`<span><b>Not ready for the board yet.</b> ${nAll} exception${nAll>1?'s':''} between the CRM and the ARR schedule (${nNeg} break the bookings-to-ARR tie-out).</span><button class="btn go" data-tab="checks">Review exceptions</button>`:`<span><b>Ties out.</b> Every closed-won deal in the last six months matches an ARR change, and every ARR increase has a deal behind it.</span>`;
+  // KPIs
+  const net=b.close-b.open;const qMonths=mRange(q.start,asof);const qtdBk=qMonths.reduce((a,m)=>a+(S.bk[m]?.new||0)+(S.bk[m]?.exp||0),0);
+  const nq=qOf(addM(q.end,1));const open=S.deals.filter(d=>!isWon(d.stage)&&!isLost(d.stage)&&d.close_date);
+  const nqOpen=open.filter(d=>{const m=d.close_date.slice(0,7);return m>=nq.start&&m<=nq.end});
+  const wp=nqOpen.reduce((a,d)=>a+d.amount_arr*(S.probs[d.stage]??0.2),0);
+  if(!S.nqTargetSet){const pq=[qOf(addM(q.start,-1)),qOf(addM(q.start,-4))];const avg=pq.reduce((a,x)=>a+mRange(x.start,x.end).reduce((s,m)=>s+(S.bk[m]?.new||0)+(S.bk[m]?.exp||0),0),0)/2;S.nqTarget=Math.round(avg*1.15/10000)*10000;$('#nqTarget').value=S.nqTarget}
+  const cov=S.nqTarget?wp/S.nqTarget:null;
+  const kp=[
+    ['Ending ARR',money(b.close,2),`${net>=0?'+':''}${money(net)} vs ${mShort(addM(asof,-1))} · ${pct(net/b.open)}`, net>=0],
+    ['Net new ARR',money(net),`New ${money(b.new+b.react)} · churn ${money(b.churn)}`,net>=0],
+    ['NRR, trailing 12m',ret?pct(ret.nrr):'–',ret?'Cohort from '+mShort(addM(asof,-12)):'Needs 13 months of data',ret&&ret.nrr>=1],
+    ['GRR, trailing 12m',ret?pct(ret.grr):'–',ret?`Lost ${pct(1-ret.grr)} of starting ARR`:'',null],
+    [`Bookings ${q.label} to date`,money(qtdBk),`${qMonths.length} of 3 months closed`,null],
+    [`${nq.label} weighted pipeline`,money(wp),cov!=null?`${cov.toFixed(2)}× of target`:'',cov!=null&&cov>=1]];
+  $('#kpis').innerHTML=kp.map(([l,v,d,g])=>`<div class="card kpi"><div class="l">${l}</div><div class="v num">${v}</div><div class="d ${g===true?'up':g===false?'down':''}">${d}</div></div>`).join('');
+  // narrative
+  const ev=M.events.filter(e=>e.month===asof);const churners=ev.filter(e=>e.type==='churn').sort((a,b)=>a.delta-b.delta);const bigExp=ev.filter(e=>e.type==='exp').sort((a,b)=>b.delta-a.delta)[0];
+  const nNew=ev.filter(e=>e.type==='new').length;
+  const lines=[
+    `ARR closed ${mLabel(asof)} at ${money(b.close,2)}, ${net>=0?'up':'down'} ${money(Math.abs(net))} (${pct(Math.abs(net)/b.open)}) on ${mLabel(addM(asof,-1))}, across ${b.count} customers.`,
+    `New business added ${money(b.new)} from ${nNew} customer${nNew===1?'':'s'}${b.react?` plus ${money(b.react)} reactivated`:''}; expansion added ${money(b.exp)}${bigExp?`, led by ${bigExp.customer_name} (+${money(bigExp.delta)})`:''}. ${(b.contr||b.churn)?`Contraction took ${money(-b.contr)} and churn ${money(-b.churn)}${churners.length?` (${churners.length} logo${churners.length>1?'s':''}, largest ${churners[0].customer_name} at ${money(-churners[0].delta)})`:''}.`:'No contraction or churn this month.'}`,
+    ret?`Trailing-12-month NRR is ${pct(ret.nrr)} and GRR ${pct(ret.grr)}${M.ret(addM(asof,-1))?`, versus ${pct(M.ret(addM(asof,-1)).nrr)} and ${pct(M.ret(addM(asof,-1)).grr)} a month ago`:''}.`:'',
+    `${q.label} bookings stand at ${money(qtdBk)} with ${3-qMonths.length} month${3-qMonths.length===1?'':'s'} to go. Weighted pipeline for ${nq.label} is ${money(wp)}${cov!=null?`, ${cov.toFixed(2)}× the ${money(S.nqTarget)} target`:''}.`,
+    nAll?`Before this goes out: ${nAll} CRM-to-schedule exception${nAll>1?'s':''} to clear, ${nNeg} of which affect the bookings-to-ARR tie-out.`:`CRM bookings tie to the ARR schedule for the last six months.`];
+  S.narrText=lines.filter(Boolean).join('\n\n');
+  $('#narr').innerHTML=lines.filter(Boolean).map(l=>`<p>${esc(l)}</p>`).join('');
+  $('#wfTitle').textContent=`ARR bridge · ${mLabel(asof)}`;$('#waterfall').innerHTML=waterfall(b);$('#arrChart').innerHTML=arrChart(M,asof);
+  // ARR tab
+  const ms=M.months.filter(m=>m<=asof&&M.bridge[m].open!=null).slice(-12);
+  const cols=[['open','Opening'],['new','New'],['exp','Expansion'],['react','Reactivated'],['contr','Contraction'],['churn','Churn'],['close','Closing']];
+  $('#bridgeTbl').innerHTML=`<tr><th>Month</th>${cols.map(c=>`<th class="n">${c[1]}</th>`).join('')}<th class="n">Net new</th><th class="n">Customers</th></tr>`+ms.map(m=>{const x=M.bridge[m];return `<tr${m===asof?' style="background:var(--accent-soft)"':''}><td>${mShort(m)}</td>${cols.map(c=>`<td class="n ${['contr','churn'].includes(c[0])&&x[c[0]]?'down':''}">${x[c[0]]?money(x[c[0]],['open','close'].includes(c[0])?2:0):'–'}</td>`).join('')}<td class="n ${x.close-x.open>=0?'up':'down'}">${money(x.close-x.open)}</td><td class="n">${x.count}</td></tr>`}).join('')+(()=>{const t=k=>ms.reduce((a,m)=>a+M.bridge[m][k],0);return `<tr class="tot"><td>12-month total</td><td class="n">${money(M.bridge[ms[0]].open,2)}</td>${['new','exp','react','contr','churn'].map(k=>`<td class="n">${money(t(k))}</td>`).join('')}<td class="n">${money(b.close,2)}</td><td class="n">${money(b.close-M.bridge[ms[0]].open)}</td><td></td></tr>`})();
+  $('#retTbl').innerHTML=`<tr><th>Month</th><th class="n">NRR</th><th class="n">GRR</th></tr>`+ms.slice().reverse().map(m=>{const r=M.ret(m);return `<tr><td>${mShort(m)}</td><td class="n">${r?pct(r.nrr):'–'}</td><td class="n">${r?pct(r.grr):'–'}</td></tr>`}).join('');
+  const mv=ev.slice().sort((a,b)=>Math.abs(b.delta)-Math.abs(a.delta)).slice(0,10);const lbl={new:'New',exp:'Expansion',react:'Reactivated',contr:'Contraction',churn:'Churn'},cls={new:'pos',exp:'pos',react:'pos',contr:'warn',churn:'neg'};
+  $('#moversTbl').innerHTML=`<tr><th>Customer</th><th>Type</th><th class="n">Change</th><th class="n">ARR now</th></tr>`+mv.map(e=>`<tr><td>${esc(e.customer_name)}</td><td><span class="pill ${cls[e.type]}">${lbl[e.type]}</span></td><td class="n ${e.delta>0?'up':'down'}">${e.delta>0?'+':''}${money(e.delta)}</td><td class="n">${money(e.to)}</td></tr>`).join('');
+  // Pipe tab
+  const bm=mRange(addM(asof,-11),asof);$('#bookChart').innerHTML=bookChart(bm);
+  $('#bookTbl').innerHTML=`<tr><th>Quarter</th><th class="n">New</th><th class="n">Expansion</th><th class="n">Total</th><th class="n">Deals</th></tr>`+[...new Set(bm.map(m=>qOf(m).label))].map(l=>{const mm=bm.filter(m=>qOf(m).label===l);const s=k=>mm.reduce((a,m)=>a+(S.bk[m]?.[k]||0),0);return `<tr><td>${l}${mm.length<3?' (partial)':''}</td><td class="n">${money(s('new'))}</td><td class="n">${money(s('exp'))}</td><td class="n">${money(s('new')+s('exp'))}</td><td class="n">${s('n')}</td></tr>`}).join('');
+  $('#covHint').textContent=`Open deals with a close date in ${nq.label}, weighted by stage probability, against the target you set`;
+  $('#coverage').innerHTML=`<div class="row" style="justify-content:space-between"><span class="kpi"><span class="v num">${cov!=null?cov.toFixed(2)+'×':'–'}</span></span><span class="d" style="color:var(--muted);font-size:12px">${money(wp)} weighted of ${money(nqOpen.reduce((a,d)=>a+d.amount_arr,0))} unweighted, ${nqOpen.length} deals</span></div><div class="bar" style="margin-top:8px;height:10px"><i class="${cov>=1?'over':''}" style="width:${Math.min(100,(cov||0)*100)}%"></i></div>`;
+  const stg=[...new Set(open.map(d=>d.stage))];stg.forEach(s=>{if(S.probs[s]==null)S.probs[s]=0.2});
+  $('#stageTbl').innerHTML=`<tr><th>Stage</th><th class="n">Deals</th><th class="n">Unweighted</th><th class="n">Probability</th><th class="n">Weighted</th></tr>`+stg.sort((a,b)=>S.probs[a]-S.probs[b]).map(s=>{const ds=open.filter(d=>d.stage===s);const u=ds.reduce((a,d)=>a+d.amount_arr,0);return `<tr><td>${esc(s)}</td><td class="n">${ds.length}</td><td class="n">${money(u)}</td><td class="n"><input type="number" data-prob="${esc(s)}" value="${Math.round(S.probs[s]*100)}" min="0" max="100" style="width:64px"> %</td><td class="n">${money(u*S.probs[s])}</td></tr>`}).join('')+`<tr class="tot"><td>All open</td><td class="n">${open.length}</td><td class="n">${money(open.reduce((a,d)=>a+d.amount_arr,0))}</td><td></td><td class="n">${money(open.reduce((a,d)=>a+d.amount_arr*S.probs[d.stage],0))}</td></tr>`;
+  // Comp: pay on the most recent quarter fully closed by the close month
+  S.compQ=asof===q.end?q:qOf(addM(q.start,-1));
+  renderComp(S.compQ,asof);
+  // Spend
+  const end=new Date(addM(asof,1)+'-01T00:00:00');const in90=new Date(end.getTime()+90*864e5);
+  const ren=S.vendors.map(v=>({...v,rd:new Date(v.renewal_date+'T00:00:00')})).filter(v=>v.rd>=end&&v.rd<=in90).map(v=>({...v,nd:new Date(v.rd.getTime()-(v.notice_days||0)*864e5)})).sort((a,b)=>a.nd-b.nd);
+  const dd=d=>Math.round((d-end)/864e5);const fd=d=>`${d.getDate()} ${MN[d.getMonth()]}`;
+  $('#renewTbl').innerHTML=`<tr><th>Vendor</th><th class="n">Annual</th><th>Renews</th><th>Notice by</th><th>Flag</th></tr>`+(ren.length?ren.map(v=>{const n=dd(v.nd);const auto=/^y/i.test(v.auto_renew);const f=n<0?`<span class="pill neg">Notice passed</span>`:n<=14&&auto?`<span class="pill neg">Auto-renews · ${n}d to give notice</span>`:auto?`<span class="pill warn">Auto-renews</span>`:`<span class="pill mute">Manual</span>`;return `<tr><td>${esc(v.vendor)}<div style="font-size:11px;color:var(--muted)">${esc(v.owner)}</div></td><td class="n">${money(v.annual_cost)}</td><td>${fd(v.rd)}</td><td>${fd(v.nd)}</td><td>${f}</td></tr>`}).join(''):`<tr><td colspan="5" style="color:var(--muted)">No renewals in the next 90 days.</td></tr>`);
+  const cat={};S.vendors.forEach(v=>cat[v.category]=(cat[v.category]||0)+v.annual_cost);
+  $('#spendChart').innerHTML=hbars(Object.entries(cat).sort((a,b)=>b[1]-a[1]))+`<p class="note">Notice deadlines are counted back from the renewal date by each contract's notice period, measured from the start of ${mLabel(addM(asof,1))}.</p>`;
+  // Checks
+  $('#chkTbl').innerHTML=S.checks.length?`<tr><th>Issue</th><th>Record</th><th>Detail</th><th>Why it matters</th></tr>`+S.checks.sort((a,b)=>(a.sev==='neg'?0:1)-(b.sev==='neg'?0:1)).map(c=>`<tr><td><span class="pill ${c.sev}">${esc(c.kind)}</span></td><td>${esc(c.rec)}</td><td>${esc(c.detail)}</td><td style="white-space:normal;min-width:240px;color:var(--muted)">${esc(c.why)}</td></tr>`).join(''):`<tr><td style="color:var(--pos)">No exceptions. CRM and ARR schedule tie out for the last six months.</td></tr>`;
+}
+function renderComp(q,asof){
+  const rate=num($('#rate').value)/100,acc=num($('#accel').value),rampM=num($('#rampM').value),rampP=num($('#rampP').value)/100;
+  const won=S.deals.filter(d=>isWon(d.stage)&&d.close_date&&/new|exp/i.test(d.type)&&d.close_date.slice(0,7)>=q.start&&d.close_date.slice(0,7)<=q.end);
+  const owners=[...new Set([...Object.keys(S.repSheet),...won.map(d=>d.owner).filter(Boolean)])];
+  const unassigned=won.filter(d=>!d.owner).reduce((a,d)=>a+d.amount_arr,0);
+  const rows=owners.map(o=>{const st=S.repSheet[o];const ramping=st&&mDiff(st,q.start)<rampM;const full=S.quota[o]??S.defQuota;const quota=full*(ramping?rampP:1);const cr=won.filter(d=>d.owner===o).reduce((a,d)=>a+d.amount_arr,0);const base=rate*Math.min(cr,quota),ac=rate*acc*Math.max(0,cr-quota);return {o,st,ramping,full,quota,cr,att:quota?cr/quota:0,base,ac,tot:base+ac,n:won.filter(d=>d.owner===o).length}}).filter(r=>r.st?r.st<=q.end:true).sort((a,b)=>b.cr-a.cr);
+  S.compRows=rows;
+  $('#compTitle').textContent=`Commission run · ${q.label} (last closed quarter)`;
+  const T=k=>rows.reduce((a,r)=>a+r[k],0);
+  $('#compTbl').innerHTML=`<tr><th>Rep</th><th class="n">Full quota</th><th class="n">This quarter</th><th class="n">Credited ARR</th><th>Attainment</th><th class="n">Base</th><th class="n">Accelerator</th><th class="n">Payout</th></tr>`+rows.map(r=>`<tr><td>${esc(r.o)}${r.ramping?' <span class="pill warn">Ramping</span>':''}<div style="font-size:11px;color:var(--muted)">${r.n} deal${r.n===1?'':'s'}${r.st?' · started '+mShort(r.st):''}</div></td><td class="n"><input type="number" data-quota="${esc(r.o)}" value="${r.full}" step="5000" style="width:96px"></td><td class="n">${money(r.quota)}</td><td class="n">${money(r.cr)}</td><td><div class="row" style="gap:8px;flex-wrap:nowrap"><div class="bar" style="width:90px"><i class="${r.att>=1?'over':''}" style="width:${Math.min(100,r.att*100)}%"></i></div><span class="num">${pct(r.att,0)}</span></div></td><td class="n">${moneyFull(r.base)}</td><td class="n">${r.ac?moneyFull(r.ac):'–'}</td><td class="n"><b>${moneyFull(r.tot)}</b></td></tr>`).join('')+`<tr class="tot"><td>Total</td><td></td><td class="n">${money(T('quota'))}</td><td class="n">${money(T('cr'))}</td><td>${pct(T('cr')/T('quota'),0)}</td><td class="n">${moneyFull(T('base'))}</td><td class="n">${moneyFull(T('ac'))}</td><td class="n">${moneyFull(T('tot'))}</td></tr>`;
+  $('#compNote').textContent=(unassigned?`${moneyFull(unassigned)} of closed-won ARR has no owner and is not credited. See Data checks. `:'')+`Credited on CRM amounts; where the CRM and ARR schedule disagree, the Data checks tab lists the deals to resolve before payroll.`;
+}
+
+/* ---------- events ---------- */
+S.defQuota=110000;
+function showTab(t){$$('nav.tabs button').forEach(b=>b.classList.toggle('on',b.dataset.tab===t));$$('section[id^="t-"]').forEach(s=>s.classList.toggle('hide',s.id!=='t-'+t));if(window.innerWidth<700)window.scrollTo({top:$('#tabs').offsetTop-8,behavior:'smooth'})}
+document.addEventListener('click',e=>{const t=e.target.closest('[data-tab]');if(t)showTab(t.dataset.tab);const d=e.target.closest('[data-dl]');if(d){const k=d.dataset.dl;
+  if(k==='arr')download('arr_schedule.csv',toCSV(S.demo.sched,['month','customer_id','customer_name','arr']));
+  if(k==='deals')download('crm_deals.csv',toCSV(S.demo.deals.map(x=>({...x,owner_start:S.demo.repSheet[x.owner]||''})),['deal_id','customer_id','customer_name','owner','stage','type','close_date','amount_arr','owner_start']));
+  if(k==='vendors')download('vendors.csv',toCSV(S.demo.vendors,['vendor','category','annual_cost','renewal_date','notice_days','auto_renew','owner']))}});
+$('#asof').addEventListener('change',e=>{S.asof=e.target.value;S.nqTargetSet=false;render()});
+$('#nqTarget').addEventListener('change',e=>{S.nqTarget=num(e.target.value);S.nqTargetSet=true;render()});
+['rate','accel','rampM','rampP'].forEach(id=>$('#'+id).addEventListener('input',()=>renderComp(S.compQ,S.asof)));
+document.addEventListener('change',e=>{if(e.target.dataset.quota){S.quota[e.target.dataset.quota]=num(e.target.value);renderComp(S.compQ,S.asof)}if(e.target.dataset.prob){S.probs[e.target.dataset.prob]=num(e.target.value)/100;render()}});
+$('#dlComp').addEventListener('click',()=>download(`commissions_${qOf(S.asof).label.replace(' ','_')}.csv`,toCSV(S.compRows.map(r=>({rep:r.o,quota:Math.round(r.quota),credited_arr:Math.round(r.cr),attainment:(r.att*100).toFixed(1)+'%',base:r.base.toFixed(2),accelerator:r.ac.toFixed(2),payout:r.tot.toFixed(2)})),['rep','quota','credited_arr','attainment','base','accelerator','payout'])));
+$('#copyPack').addEventListener('click',async()=>{const t=`Month-end summary · ${mLabel(S.asof)}\n\n`+S.narrText;try{await navigator.clipboard.writeText(t);toast('Board summary copied')}catch{const a=document.createElement('textarea');a.value=t;document.body.appendChild(a);a.select();document.execCommand('copy');a.remove();toast('Board summary copied')}});
+$('#resetDemo').addEventListener('click',()=>{S.sched=S.demo.sched;S.deals=S.demo.deals;S.vendors=S.demo.vendors;S.repSheet=S.demo.repSheet;S.src={arr:'demo',deals:'demo',vendors:'demo'};S.asof=null;S.nqTargetSet=false;S.quota={};$$('.loaded').forEach(e=>e.textContent='');$$('input[type=file]').forEach(e=>e.value='');render();toast('Back on demo data')});
+$$('input[type=file]').forEach(inp=>inp.addEventListener('change',async()=>{const f=inp.files[0];if(!f)return;const k=inp.dataset.kind;try{const rows=parseCSV(await f.text());let n=0;
+  if(k==='arr'){S.sched=rows.map(r=>({month:normMonth(r.month),customer_id:r.customer_id,customer_name:r.customer_name,arr:num(r.arr)})).filter(r=>r.month&&r.customer_id);n=S.sched.length;S.asof=null}
+  if(k==='deals'){S.deals=rows.map(r=>({deal_id:r.deal_id,customer_id:r.customer_id,customer_name:r.customer_name,owner:r.owner,stage:r.stage,type:r.type||'new',close_date:normDate(r.close_date),amount_arr:num(r.amount_arr)}));S.repSheet={};rows.forEach(r=>{if(r.owner&&r.owner_start)S.repSheet[r.owner]=normMonth(r.owner_start)});n=S.deals.length}
+  if(k==='vendors'){S.vendors=rows.map(r=>({vendor:r.vendor,category:r.category||'Other',annual_cost:num(r.annual_cost),renewal_date:normDate(r.renewal_date),notice_days:num(r.notice_days),auto_renew:r.auto_renew||'',owner:r.owner||''})).filter(v=>v.renewal_date);n=S.vendors.length}
+  if(!n)throw new Error('no usable rows');S.src[k]=f.name;S.nqTargetSet=false;$('#ld-'+k).textContent=`Loaded ${n.toLocaleString()} rows from ${f.name}`;render();toast('Loaded '+f.name)}catch(err){$('#ld-'+k).textContent='';toast('Could not read that file: '+err.message)}}));
+render();
+</script>
+</body>
+</html>
